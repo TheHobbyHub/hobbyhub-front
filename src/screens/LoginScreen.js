@@ -1,12 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, SafeAreaView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Alert,
+  Modal,
+  ActivityIndicator
+} from 'react-native';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import api from '../services/api';
+import api, { solicitarCodigoRecuperacao, redefinirSenha } from '../services/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+
+  // Estados do fluxo de recuperação
+  const [modalVisivel, setModalVisivel] = useState(false);
+  const [etapa, setEtapa] = useState(1); // 1 = Email, 2 = Código + Nova Senha
+  const [emailRecuperacao, setEmailRecuperacao] = useState('');
+  const [codigo, setCodigo] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !senha.trim()) {
@@ -27,6 +47,52 @@ export default function LoginScreen({ navigation }) {
       const msg = error.response?.data?.message || 'Falha ao conectar ao servidor.';
       Alert.alert('Erro', msg);
     }
+  };
+
+  const handleSolicitarCodigo = async () => {
+    if (!emailRecuperacao.trim()) {
+      Alert.alert('Atenção', 'Informe o seu e-mail cadastrado.');
+      return;
+    }
+
+    try {
+      setCarregando(true);
+      await solicitarCodigoRecuperacao(emailRecuperacao.trim());
+      Alert.alert('Código Enviado', 'Verifique a sua caixa de entrada.');
+      setEtapa(2);
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Erro ao enviar o código. Verifique o e-mail informado.';
+      Alert.alert('Erro', msg);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  const handleRedefinirSenha = async () => {
+    if (!codigo.trim() || !novaSenha.trim()) {
+      Alert.alert('Atenção', 'Preencha o código e a nova senha.');
+      return;
+    }
+
+    try {
+      setCarregando(true);
+      await redefinirSenha(emailRecuperacao.trim(), codigo.trim(), novaSenha.trim());
+      Alert.alert('Sucesso', 'Senha alterada com sucesso! Entre com a nova senha.');
+      fecharModal();
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Código inválido ou expirado.';
+      Alert.alert('Erro', msg);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  const fecharModal = () => {
+    setModalVisivel(false);
+    setEtapa(1);
+    setEmailRecuperacao('');
+    setCodigo('');
+    setNovaSenha('');
   };
 
   return (
@@ -67,7 +133,13 @@ export default function LoginScreen({ navigation }) {
               secureTextEntry
             />
 
-            <TouchableOpacity style={styles.forgotPassword}>
+            <TouchableOpacity 
+              style={styles.forgotPassword}
+              onPress={() => {
+                setEmailRecuperacao(email);
+                setModalVisivel(true);
+              }}
+            >
               <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
             </TouchableOpacity>
           </View>
@@ -82,6 +154,83 @@ export default function LoginScreen({ navigation }) {
         </View>
 
       </ScrollView>
+
+      {/* Modal de Recuperação de Senha */}
+      <Modal
+        visible={modalVisivel}
+        transparent
+        animationType="fade"
+        onRequestClose={fecharModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              {etapa === 1 ? 'Recuperar Senha' : 'Nova Senha'}
+            </Text>
+            
+            <Text style={styles.modalSubtitle}>
+              {etapa === 1 
+                ? 'Digite seu e-mail para receber um código de recuperação de 6 dígitos.' 
+                : 'Insira o código recebido no e-mail e defina a sua nova senha.'}
+            </Text>
+
+            {etapa === 1 ? (
+              <>
+                <Input
+                  placeholder="Seu e-mail cadastrado"
+                  value={emailRecuperacao}
+                  onChangeText={setEmailRecuperacao}
+                  keyboardType="email-address"
+                />
+                
+                <View style={{ marginTop: 12 }}>
+                  {carregando ? (
+                    <ActivityIndicator size="small" color="#7986CB" />
+                  ) : (
+                    <Button 
+                      title="Enviar Código" 
+                      variant="primary" 
+                      onPress={handleSolicitarCodigo} 
+                    />
+                  )}
+                </View>
+              </>
+            ) : (
+              <>
+                <Input
+                  placeholder="Código de 6 dígitos"
+                  value={codigo}
+                  onChangeText={setCodigo}
+                  keyboardType="number-pad"
+                />
+
+                <Input
+                  placeholder="Nova Senha"
+                  value={novaSenha}
+                  onChangeText={setNovaSenha}
+                  secureTextEntry
+                />
+
+                <View style={{ marginTop: 12 }}>
+                  {carregando ? (
+                    <ActivityIndicator size="small" color="#7986CB" />
+                  ) : (
+                    <Button 
+                      title="Alterar Senha" 
+                      variant="primary" 
+                      onPress={handleRedefinirSenha} 
+                    />
+                  )}
+                </View>
+              </>
+            )}
+
+            <TouchableOpacity style={styles.modalCancelButton} onPress={fecharModal}>
+              <Text style={styles.modalCancelText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -154,5 +303,47 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     marginTop: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 24,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#3F3D56',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  modalSubtitle: {
+    fontSize: 13,
+    color: '#7A7A7A',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 18,
+  },
+  modalCancelButton: {
+    marginTop: 14,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  modalCancelText: {
+    color: '#9EA0A4',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
