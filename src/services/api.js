@@ -11,7 +11,6 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Interceptor: injeta dinamicamente o IP salvo pelo usuário antes de qualquer requisição
 api.interceptors.request.use(async (config) => {
   try {
     const savedUrl = await AsyncStorage.getItem('@api_base_url');

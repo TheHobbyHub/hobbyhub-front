@@ -20,7 +20,6 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  // Estados do fluxo de recuperação
   const [modalVisivel, setModalVisivel] = useState(false);
   const [etapa, setEtapa] = useState(1);
   const [emailRecuperacao, setEmailRecuperacao] = useState('');
@@ -367,7 +366,7 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     marginTop: 24,
-    marginBottom: 28, // Eleva o botão consideravelmente para não sumir na base
+    marginBottom: 28,
   },
   modalOverlay: {
     flex: 1,
