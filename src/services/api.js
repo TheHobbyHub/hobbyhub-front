@@ -1,4 +1,5 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -8,6 +9,19 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 10000,
+});
+
+// Interceptor: injeta dinamicamente o IP salvo pelo usuário antes de qualquer requisição
+api.interceptors.request.use(async (config) => {
+  try {
+    const savedUrl = await AsyncStorage.getItem('@api_base_url');
+    if (savedUrl) {
+      config.baseURL = savedUrl;
+    }
+  } catch (error) {
+    console.warn('Erro ao ler baseURL do AsyncStorage:', error);
+  }
+  return config;
 });
 
 export const solicitarCodigoRecuperacao = async (email) => {
