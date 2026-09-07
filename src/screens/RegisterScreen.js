@@ -67,7 +67,6 @@ export default function RegisterScreen({ navigation }) {
   const handleRegister = async () => {
     const { nome, sobrenome, cpf, telefone, email, senha, confirmarSenha } = formData;
 
-    // Se faltar qualquer campo com *
     if (
       !nome.trim() ||
       !sobrenome.trim() ||
@@ -128,7 +127,6 @@ export default function RegisterScreen({ navigation }) {
       console.log('Erro retornado:', error.response?.data);
       const data = error.response?.data;
 
-      // Trata as mensagens vindas do GlobalExceptionHandler
       if (data && typeof data === 'object' && !data.mensagem && !data.message) {
         const primeiroErro = Object.values(data)[0];
         Alert.alert('Atenção', primeiroErro);

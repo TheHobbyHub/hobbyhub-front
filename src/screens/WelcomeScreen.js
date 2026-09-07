@@ -36,7 +36,6 @@ export default function WelcomeScreen({ navigation }) {
       return;
     }
 
-    // Remove barra no final se o usuário tiver colocado (ex: :8080/ -> :8080)
     const formattedUrl = cleanUrl.endsWith('/') ? cleanUrl.slice(0, -1) : cleanUrl;
 
     await AsyncStorage.setItem('@api_base_url', formattedUrl);
