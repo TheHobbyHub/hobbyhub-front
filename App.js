@@ -7,6 +7,11 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 
+// Importação das novas telas do fluxo de assinatura
+import PlanosScreen from './src/screens/PlanosScreen';
+import CheckoutScreen from './src/screens/CheckoutScreen';
+import ConfirmacaoScreen from './src/screens/ConfirmacaoScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -22,6 +27,10 @@ export default function App() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
+        
+        <Stack.Screen name="Planos" component={PlanosScreen} />
+        <Stack.Screen name="Checkout" component={CheckoutScreen} />
+        <Stack.Screen name="Confirmacao" component={ConfirmacaoScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

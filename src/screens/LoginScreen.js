@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import api, { solicitarCodigoRecuperacao, redefinirSenha } from '../services/api';
@@ -49,11 +50,14 @@ export default function LoginScreen({ navigation }) {
         senha: senha,
       });
 
-      Alert.alert('Sucesso', 'Login efetuado com sucesso!');
-      console.log('Resposta Spring Boot:', response.data);
+      // Agora o backend devolve o objeto do usuário, capturamos o ID real
+      const usuarioId = response.data.id; 
+      await AsyncStorage.setItem('@usuario_logado_id', String(usuarioId));
+
+      navigation.navigate('Planos');
     } catch (error) {
       console.log('Erro no login:', error.response?.data);
-      const msg = error.response?.data?.mensagem || error.response?.data?.message || 'Falha ao conectar ao servidor.';
+      const msg = error.response?.data?.mensagem || 'Falha ao conectar ao servidor.';
       Alert.alert('Erro', msg);
     }
   };
@@ -291,123 +295,24 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  rootBackground: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#D1DCF4',
-  },
-  wrapper: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'space-between',
-  },
-  topArea: {
-    paddingTop: 40,
-    paddingBottom: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandTitle: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    paddingHorizontal: 28,
-    paddingTop: 32,
-    paddingBottom: 40,
-    flex: 1,
-    minHeight: 460,
-    justifyContent: 'space-between',
-  },
-  headerCard: {
-    position: 'relative',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 28,
-    minHeight: 40,
-  },
-  backButton: {
-    position: 'absolute',
-    left: 0,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  backIcon: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#7986CB',
-  },
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#3F3D56',
-    textAlign: 'center',
-  },
-  forgotPassword: {
-    alignItems: 'flex-end',
-    marginTop: 4,
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: '#9EA0A4',
-    fontSize: 13,
-  },
-  actionContainer: {
-    marginTop: 24,
-    marginBottom: 28,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  modalContent: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#3F3D56',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  modalSubtitle: {
-    fontSize: 13,
-    color: '#7A7A7A',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 18,
-  },
-  modalCancelButton: {
-    marginTop: 14,
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  modalCancelText: {
-    color: '#9EA0A4',
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  rootBackground: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flex: 1, backgroundColor: '#D1DCF4' },
+  wrapper: { flex: 1 },
+  scrollContainer: { flexGrow: 1, justifyContent: 'space-between' },
+  topArea: { paddingTop: 40, paddingBottom: 24, alignItems: 'center', justifyContent: 'center' },
+  brandTitle: { fontSize: 36, fontWeight: 'bold', color: '#FFFFFF' },
+  card: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 36, borderTopRightRadius: 36, paddingHorizontal: 28, paddingTop: 32, paddingBottom: 40, flex: 1, minHeight: 460, justifyContent: 'space-between' },
+  headerCard: { position: 'relative', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 28, minHeight: 40 },
+  backButton: { position: 'absolute', left: 0, width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start' },
+  backIcon: { fontSize: 28, fontWeight: 'bold', color: '#7986CB' },
+  cardTitle: { fontSize: 22, fontWeight: '700', color: '#3F3D56', textAlign: 'center' },
+  forgotPassword: { alignItems: 'flex-end', marginTop: 4, marginBottom: 20 },
+  forgotPasswordText: { color: '#9EA0A4', fontSize: 13 },
+  actionContainer: { marginTop: 24, marginBottom: 28 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 },
+  modalContent: { width: '100%', backgroundColor: '#FFFFFF', borderRadius: 24, padding: 24, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4 },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: '#3F3D56', textAlign: 'center', marginBottom: 8 },
+  modalSubtitle: { fontSize: 13, color: '#7A7A7A', textAlign: 'center', marginBottom: 20, lineHeight: 18 },
+  modalCancelButton: { marginTop: 14, alignItems: 'center', paddingVertical: 8 },
+  modalCancelText: { color: '#9EA0A4', fontSize: 14, fontWeight: '600' },
 });
