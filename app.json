@@ -26,10 +26,17 @@
             "usesCleartextTraffic": true
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-status-bar"
     ],
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f6f1d38f-ced2-4058-9f17-f5d9055639be"
+      }
     }
   }
 }
