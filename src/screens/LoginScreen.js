@@ -15,7 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import api, { solicitarCodigoRecuperacao, redefinirSenha } from '../services/api';
+import api, { solicitarCodigoRecuperacao, redefinirSenha, buscarResumoAssinatura } from '../services/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -54,7 +54,19 @@ export default function LoginScreen({ navigation }) {
       const usuarioId = response.data.id; 
       await AsyncStorage.setItem('@usuario_logado_id', String(usuarioId));
 
-      navigation.navigate('Planos');
+      // Quem já tem assinatura vai direto para a Home; quem não tem passa pela escolha de plano
+      let possuiAssinatura = false;
+      try {
+        possuiAssinatura = (await buscarResumoAssinatura(usuarioId)).possuiAssinatura;
+      } catch {
+        // Se o resumo falhar, segue para os planos como antes
+      }
+
+      if (possuiAssinatura) {
+        navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+      } else {
+        navigation.navigate('Planos');
+      }
     } catch (error) {
       console.log('Erro no login:', error.response?.data);
       const msg = error.response?.data?.mensagem || 'Falha ao conectar ao servidor.';
