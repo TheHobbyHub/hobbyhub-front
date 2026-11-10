@@ -155,7 +155,10 @@ export default function PlanosScreen({ navigation }) {
           <Text style={styles.btnContinuarTexto}>Continuar com {planoAtual?.nome.replace('Plano ', '')} <Ionicons name="arrow-forward" size={16} color="#FFF" /></Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.btnPular} onPress={() => navigation.navigate('Welcome')}>
+        <TouchableOpacity
+          style={styles.btnPular}
+          onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Main' }] })}
+        >
           <Text style={styles.btnPularTexto}>Agora não, quero explorar o catálogo primeiro</Text>
         </TouchableOpacity>
       </ScrollView>

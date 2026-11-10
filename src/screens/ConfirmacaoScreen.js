@@ -5,6 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 export default function ConfirmacaoScreen({ route, navigation }) {
   const { plano } = route.params;
 
+  // Assinatura feita: a área logada vira a raiz da navegação
+  const irParaInicio = (aba) =>
+    navigation.reset({ index: 0, routes: [{ name: 'Main', params: { screen: aba } }] });
+
   const precoFormatado = plano.precoMensal.toFixed(2).replace('.', ',');
 
   // Calcula a data de renovação para 1 mês a partir de hoje
@@ -74,7 +78,7 @@ export default function ConfirmacaoScreen({ route, navigation }) {
 
         <View style={styles.sugestoesHeader}>
           <Text style={styles.sugestoesTitulo}>Sugestões para começar</Text>
-          <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}} onPress={() => irParaInicio('Explorar')}>
             <Text style={styles.explorarText}>Explorar todas </Text>
             <Ionicons name="arrow-forward" size={14} color="#4A5799" />
           </TouchableOpacity>
@@ -99,12 +103,12 @@ export default function ConfirmacaoScreen({ route, navigation }) {
           </View>
         </ScrollView>
 
-        <TouchableOpacity style={styles.btnPersonalizar} onPress={() => navigation.navigate('Welcome')}>
+        <TouchableOpacity style={styles.btnPersonalizar} onPress={() => irParaInicio('Explorar')}>
           <Ionicons name="options-outline" size={20} color="#FFF" style={{marginRight: 8}} />
           <Text style={styles.btnPersonalizarTexto}>Personalizar meus hobbies</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.btnDireto} onPress={() => navigation.navigate('Welcome')}>
+        <TouchableOpacity style={styles.btnDireto} onPress={() => irParaInicio('Inicio')}>
           <Text style={styles.btnDiretoText}>Ir direto para a tela inicial</Text>
         </TouchableOpacity>
       </ScrollView>
