@@ -77,3 +77,37 @@ export const formatarEndereco = (endereco) => {
   const rua = [endereco.logradouro, endereco.numero].filter(Boolean).join(', ');
   return [rua, endereco.bairro].filter(Boolean).join(' • ') + (endereco.estado ? `, ${endereco.estado}` : '');
 };
+
+// "11987654321" -> "(11) 98765-4321"; "1134567890" -> "(11) 3456-7890". Aceita valor parcial (máscara ao digitar)
+export const formatarTelefone = (valor) => {
+  const d = (valor || '').replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 2) return d.length ? `(${d}` : '';
+  const meio = d.length === 11 ? 7 : 6;
+  if (d.length <= meio) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, meio)}-${d.slice(meio)}`;
+};
+
+// Máscara DD/MM/AAAA ao digitar
+export const mascararData = (valor) => {
+  const d = (valor || '').replace(/\D/g, '').slice(0, 8);
+  if (d.length <= 2) return d;
+  if (d.length <= 4) return `${d.slice(0, 2)}/${d.slice(2)}`;
+  return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`;
+};
+
+// "1995-08-14" -> "14/08/1995"
+export const isoParaDataBr = (dataIso) => {
+  if (!dataIso) return '';
+  const [ano, mes, dia] = dataIso.split('-');
+  return `${dia}/${mes}/${ano}`;
+};
+
+// "14/08/1995" -> "1995-08-14"; null se a data não existir no calendário
+export const dataBrParaIso = (dataBr) => {
+  const partes = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dataBr || '');
+  if (!partes) return null;
+  const [, dia, mes, ano] = partes.map(Number);
+  const data = new Date(ano, mes - 1, dia);
+  if (data.getFullYear() !== ano || data.getMonth() !== mes - 1 || data.getDate() !== dia) return null;
+  return `${partes[3]}-${partes[2]}-${partes[1]}`;
+};

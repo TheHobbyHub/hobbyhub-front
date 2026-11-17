@@ -26,12 +26,16 @@ import ReagendarAulaScreen from './src/screens/ReagendarAulaScreen';
 import CancelarAulaScreen from './src/screens/CancelarAulaScreen';
 import AulaCanceladaScreen from './src/screens/AulaCanceladaScreen';
 import PerfilScreen from './src/screens/PerfilScreen';
+import DadosContaScreen from './src/screens/DadosContaScreen';
+import AlterarSenhaScreen from './src/screens/AlterarSenhaScreen';
+import ConteudoEstaticoScreen from './src/screens/ConteudoEstaticoScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const InicioStack = createNativeStackNavigator();
 const ExplorarStack = createNativeStackNavigator();
 const AgendaStack = createNativeStackNavigator();
+const PerfilStack = createNativeStackNavigator();
 
 const semHeader = { headerShown: false };
 
@@ -66,13 +70,24 @@ function AgendaNavigator() {
   );
 }
 
+function PerfilNavigator() {
+  return (
+    <PerfilStack.Navigator screenOptions={semHeader}>
+      <PerfilStack.Screen name="PerfilInicio" component={PerfilScreen} />
+      <PerfilStack.Screen name="DadosConta" component={DadosContaScreen} />
+      <PerfilStack.Screen name="AlterarSenha" component={AlterarSenhaScreen} />
+      <PerfilStack.Screen name="ConteudoEstatico" component={ConteudoEstaticoScreen} />
+    </PerfilStack.Navigator>
+  );
+}
+
 function MainTabs() {
   return (
     <Tab.Navigator screenOptions={semHeader} tabBar={(props) => <TabBar {...props} />}>
       <Tab.Screen name="Inicio" component={InicioNavigator} options={{ title: 'Início' }} />
       <Tab.Screen name="Explorar" component={ExplorarNavigator} options={{ title: 'Explorar' }} />
       <Tab.Screen name="Agenda" component={AgendaNavigator} options={{ title: 'Agenda' }} />
-      <Tab.Screen name="Perfil" component={PerfilScreen} options={{ title: 'Perfil' }} />
+      <Tab.Screen name="Perfil" component={PerfilNavigator} options={{ title: 'Perfil' }} />
     </Tab.Navigator>
   );
 }

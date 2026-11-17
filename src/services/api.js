@@ -38,8 +38,27 @@ export const extrairMensagemErro = (error, padrao = 'Não foi possível concluir
   return typeof primeiro === 'string' ? primeiro : padrao;
 };
 
+// Erro de validação do backend ({ campo: mensagem }); devolve null quando é um erro de regra ({ mensagem })
+export const extrairErrosDeCampo = (error) => {
+  const data = error?.response?.data;
+  if (!data || typeof data !== 'object' || data.mensagem || data.erro || data.message) return null;
+  const valores = Object.values(data);
+  return valores.length && valores.every((v) => typeof v === 'string') ? data : null;
+};
+
 export const buscarUsuario = async (usuarioId) => {
   const response = await api.get(`/usuarios/${usuarioId}`);
+  return response.data;
+};
+
+// dados: { nome, sobrenome, email, telefone, dataNascimento } (CPF não é editável)
+export const atualizarUsuario = async (usuarioId, dados) => {
+  const response = await api.put(`/usuarios/${usuarioId}`, dados);
+  return response.data;
+};
+
+export const alterarSenha = async (usuarioId, senhaAtual, novaSenha) => {
+  const response = await api.patch(`/usuarios/${usuarioId}/senha`, { senhaAtual, novaSenha });
   return response.data;
 };
 
