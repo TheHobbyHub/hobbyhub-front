@@ -89,7 +89,7 @@ export default function WelcomeScreen({ navigation }) {
               style={styles.input}
               value={serverUrl}
               onChangeText={setServerUrl}
-              placeholder="http://192.168.1.15:8080"
+              placeholder="http://SEU_IP:8080"
               autoCapitalize="none"
               autoCorrect={false}
             />

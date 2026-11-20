@@ -1,7 +1,9 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
+// O endereço real do servidor é o digitado na tela "Configuração de Servidor" (lido abaixo, a cada requisição).
+// Não vem do .env para nenhum APK carregar o IP da máquina onde foi gerado.
+const BASE_URL = 'http://localhost:8080';
 
 const api = axios.create({
   baseURL: BASE_URL,
