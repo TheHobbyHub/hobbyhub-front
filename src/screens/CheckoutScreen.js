@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator, TextInput, Platform, Alert, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../services/api';
+import CartaoVisual from '../components/CartaoVisual';
+import { assinarPlano, extrairMensagemErro } from '../services/api';
+import { mascararNumeroCartao, mascararValidadeCartao } from '../utils/formatters';
+import { validarCartao } from '../utils/validators';
 
 export default function CheckoutScreen({ route, navigation }) {
   const { plano } = route.params; 
@@ -32,17 +35,15 @@ export default function CheckoutScreen({ route, navigation }) {
     carregarUsuario();
   }, []);
 
-  const handleValidadeChange = (text) => {
-    let formatado = text.replace(/\D/g, ''); 
-    if (formatado.length > 2) {
-      formatado = formatado.substring(0, 2) + '/' + formatado.substring(2, 4);
-    }
-    setValidade(formatado);
-  };
-
   const handleConfirmarAssinatura = async () => {
     if (!numeroCartao || !nomeCartao || !validade || !cvv) {
       Alert.alert('Atenção', 'Por favor, preencha todos os dados do cartão para prosseguir.');
+      return;
+    }
+
+    const errosCartao = Object.values(validarCartao({ numero: numeroCartao, nomeTitular: nomeCartao, validade, cvv }));
+    if (errosCartao.length) {
+      Alert.alert('Confira o cartão', errosCartao.join('\n'));
       return;
     }
 
@@ -53,16 +54,16 @@ export default function CheckoutScreen({ route, navigation }) {
 
     setLoading(true);
     try {
-      await api.post('/assinaturas/assinar', {
-        usuarioId: usuarioId,
-        planoId: plano.id,
-        metodoPagamento: 'cartao_credito'
+      // O cartão fica salvo para aparecer em Gerenciar Assinatura e cobrar upgrades (o CVV não é enviado)
+      await assinarPlano(usuarioId, plano.id, {
+        numero: numeroCartao.replace(/\D/g, ''),
+        nomeTitular: nomeCartao.trim(),
+        validade,
       });
-      
+
       navigation.navigate('Confirmacao', { plano: plano });
     } catch (error) {
-      const msg = error.response?.data?.erro || 'Erro ao processar assinatura.';
-      Alert.alert('Erro', msg);
+      Alert.alert('Erro', extrairMensagemErro(error, 'Erro ao processar assinatura.'));
     } finally {
       setLoading(false);
     }
@@ -116,31 +117,7 @@ export default function CheckoutScreen({ route, navigation }) {
             <Text style={styles.cartaoTitulo}>Cartão de Crédito</Text>
           </View>
 
-          <View style={styles.cartaoMock}>
-            <View style={styles.cartaoMockTop}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Ionicons name="radio-outline" size={18} color="#FFF" style={{marginRight: 6}} />
-                <Text style={styles.cartaoMockLabel}>CARTÃO DE CRÉDITO</Text>
-              </View>
-              <View style={styles.cartaoMockCircles}>
-                <View style={[styles.circle, {backgroundColor: 'rgba(255,255,255,0.5)', marginRight: -8}]} />
-                <View style={[styles.circle, {backgroundColor: 'rgba(255,255,255,0.8)'}]} />
-              </View>
-            </View>
-            <Text style={styles.cartaoNumero}>
-              {numeroCartao ? numeroCartao.replace(/(\d{4})/g, '$1 ').trim() : '•••• •••• •••• ••••'}
-            </Text>
-            <View style={styles.cartaoRodape}>
-              <View>
-                <Text style={styles.cartaoHint}>TITULAR</Text>
-                <Text style={styles.cartaoTexto}>{nomeCartao ? nomeCartao.toUpperCase() : 'NOME DO TITULAR'}</Text>
-              </View>
-              <View style={{alignItems: 'flex-end'}}>
-                <Text style={styles.cartaoHint}>VALIDADE</Text>
-                <Text style={styles.cartaoTexto}>{validade || 'MM/AA'}</Text>
-              </View>
-            </View>
-          </View>
+          <CartaoVisual numero={numeroCartao} nomeTitular={nomeCartao} validade={validade} />
 
           <View style={styles.formArea}>
             <Text style={styles.inputLabel}>Número do Cartão</Text>
@@ -150,9 +127,9 @@ export default function CheckoutScreen({ route, navigation }) {
                 style={styles.input} 
                 placeholder="0000 0000 0000 0000"
                 keyboardType="numeric"
-                maxLength={16}
+                maxLength={23}
                 value={numeroCartao}
-                onChangeText={setNumeroCartao}
+                onChangeText={(text) => setNumeroCartao(mascararNumeroCartao(text))}
               />
             </View>
 
@@ -179,7 +156,7 @@ export default function CheckoutScreen({ route, navigation }) {
                     keyboardType="numeric"
                     maxLength={5}
                     value={validade}
-                    onChangeText={handleValidadeChange}
+                    onChangeText={(text) => setValidade(mascararValidadeCartao(text))}
                   />
                 </View>
               </View>
@@ -232,15 +209,6 @@ const styles = StyleSheet.create({
   aulasTexto: { fontSize: 12, color: '#FFFFFF', textAlign: 'center' },
   metodoHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   cartaoTitulo: { fontSize: 16, fontWeight: 'bold', color: '#4A5799', marginLeft: 8 },
-  cartaoMock: { backgroundColor: '#5C6BC0', borderRadius: 24, padding: 24, height: 190, justifyContent: 'space-between', marginBottom: 24 },
-  cartaoMockTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cartaoMockLabel: { color: '#FFF', fontSize: 12, fontWeight: 'bold', letterSpacing: 1 },
-  cartaoMockCircles: { flexDirection: 'row' },
-  circle: { width: 24, height: 24, borderRadius: 12 },
-  cartaoNumero: { fontSize: 22, color: '#FFFFFF', letterSpacing: 2, textAlign: 'center' },
-  cartaoRodape: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  cartaoHint: { color: 'rgba(255,255,255,0.7)', fontSize: 10, fontWeight: 'bold', marginBottom: 2, letterSpacing: 1 },
-  cartaoTexto: { color: '#FFFFFF', fontSize: 14, fontWeight: 'bold' },
   formArea: { marginBottom: 24 },
   inputLabel: { fontSize: 12, color: '#666', marginLeft: 4, marginBottom: 4 },
   inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 24, paddingHorizontal: 16, height: 50, marginBottom: 16, borderWidth: 1, borderColor: '#F0F0F5' },

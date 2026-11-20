@@ -10,8 +10,6 @@ import { cores, sombra } from '../theme';
 import { getUsuarioLogadoId, buscarUsuario, buscarResumoAssinatura, extrairMensagemErro } from '../services/api';
 import appConfig from '../../app.json';
 
-const emBreve = (recurso) => Alert.alert('Em breve', `${recurso} estará disponível em breve.`);
-
 export default function PerfilScreen({ navigation }) {
   const [dados, setDados] = useState(null);
   const [erro, setErro] = useState(null);
@@ -64,7 +62,7 @@ export default function PerfilScreen({ navigation }) {
 
   const itensMenu = [
     { icone: 'id-card-outline', titulo: 'Dados Pessoais', descricao: 'Nome, CPF e Nascimento', onPress: () => navigation.navigate('DadosConta') },
-    { icone: 'star-outline', titulo: 'Gerenciar Assinatura', descricao: 'Plano atual, créditos e pagamentos', onPress: () => emBreve('O gerenciamento da assinatura') },
+    { icone: 'star-outline', titulo: 'Gerenciar Assinatura', descricao: 'Plano atual, créditos e pagamentos', onPress: () => navigation.navigate('GerenciarAssinatura') },
     { icone: 'help-circle-outline', titulo: 'Central de Ajuda & FAQ', descricao: 'Dúvidas frequentes e suporte', onPress: () => navigation.navigate('ConteudoEstatico', { tipo: 'ajuda' }) },
     { icone: 'shield-checkmark-outline', titulo: 'Termos de Uso e Privacidade', descricao: 'Políticas do HobbyHub', onPress: () => navigation.navigate('ConteudoEstatico', { tipo: 'termos' }) },
   ];

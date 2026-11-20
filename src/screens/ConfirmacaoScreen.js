@@ -103,13 +103,9 @@ export default function ConfirmacaoScreen({ route, navigation }) {
           </View>
         </ScrollView>
 
-        <TouchableOpacity style={styles.btnPersonalizar} onPress={() => irParaInicio('Explorar')}>
-          <Ionicons name="options-outline" size={20} color="#FFF" style={{marginRight: 8}} />
-          <Text style={styles.btnPersonalizarTexto}>Personalizar meus hobbies</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.btnDireto} onPress={() => irParaInicio('Inicio')}>
-          <Text style={styles.btnDiretoText}>Ir direto para a tela inicial</Text>
+        <TouchableOpacity style={styles.btnInicio} onPress={() => irParaInicio('Inicio')}>
+          <Text style={styles.btnInicioTexto}>Ir para a tela inicial</Text>
+          <Ionicons name="arrow-forward" size={20} color="#FFF" style={{marginLeft: 8}} />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -150,8 +146,6 @@ const styles = StyleSheet.create({
   sugestaoBadgeText: { fontSize: 10, color: '#4A5799', fontWeight: 'bold' },
   sugestaoTitle: { fontSize: 12, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 2 },
   sugestaoSubtitle: { fontSize: 10, color: '#666' },
-  btnPersonalizar: { flexDirection: 'row', backgroundColor: '#4A5799', paddingVertical: 18, borderRadius: 30, alignItems: 'center', justifyContent: 'center', marginHorizontal: 24, marginBottom: 16 },
-  btnPersonalizarTexto: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
-  btnDireto: { alignItems: 'center', marginBottom: 20 },
-  btnDiretoText: { color: '#7986CB', fontSize: 14, fontWeight: '600' }
+  btnInicio: { flexDirection: 'row', backgroundColor: '#4A5799', paddingVertical: 18, borderRadius: 30, alignItems: 'center', justifyContent: 'center', marginHorizontal: 24, marginBottom: 20 },
+  btnInicioTexto: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' }
 });

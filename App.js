@@ -27,6 +27,13 @@ import CancelarAulaScreen from './src/screens/CancelarAulaScreen';
 import AulaCanceladaScreen from './src/screens/AulaCanceladaScreen';
 import PerfilScreen from './src/screens/PerfilScreen';
 import DadosContaScreen from './src/screens/DadosContaScreen';
+import GerenciarAssinaturaScreen from './src/screens/GerenciarAssinaturaScreen';
+import TrocarPlanoScreen from './src/screens/TrocarPlanoScreen';
+import TrocarCartaoScreen from './src/screens/TrocarCartaoScreen';
+import HistoricoFaturamentoScreen from './src/screens/HistoricoFaturamentoScreen';
+import PreferenciasPlanoScreen from './src/screens/PreferenciasPlanoScreen';
+import ConfirmarTrocaPlanoScreen from './src/screens/ConfirmarTrocaPlanoScreen';
+import TrocaPlanoConcluidaScreen from './src/screens/TrocaPlanoConcluidaScreen';
 import AlterarSenhaScreen from './src/screens/AlterarSenhaScreen';
 import ConteudoEstaticoScreen from './src/screens/ConteudoEstaticoScreen';
 
@@ -77,6 +84,11 @@ function PerfilNavigator() {
       <PerfilStack.Screen name="DadosConta" component={DadosContaScreen} />
       <PerfilStack.Screen name="AlterarSenha" component={AlterarSenhaScreen} />
       <PerfilStack.Screen name="ConteudoEstatico" component={ConteudoEstaticoScreen} />
+      <PerfilStack.Screen name="GerenciarAssinatura" component={GerenciarAssinaturaScreen} />
+      <PerfilStack.Screen name="TrocarPlano" component={TrocarPlanoScreen} />
+      <PerfilStack.Screen name="TrocarCartao" component={TrocarCartaoScreen} />
+      <PerfilStack.Screen name="HistoricoFaturamento" component={HistoricoFaturamentoScreen} />
+      <PerfilStack.Screen name="PreferenciasPlano" component={PreferenciasPlanoScreen} />
     </PerfilStack.Navigator>
   );
 }
@@ -113,6 +125,9 @@ export default function App() {
             <Stack.Screen name="AulaAgendada" component={AulaAgendadaScreen} />
             <Stack.Screen name="CancelarAula" component={CancelarAulaScreen} />
             <Stack.Screen name="AulaCancelada" component={AulaCanceladaScreen} />
+            <Stack.Screen name="ConfirmarTrocaPlano" component={ConfirmarTrocaPlanoScreen} />
+            {/* Sem gesto de voltar: a saída leva para Gerenciar Assinatura (veja a própria tela) */}
+            <Stack.Screen name="TrocaPlanoConcluida" component={TrocaPlanoConcluidaScreen} options={{ gestureEnabled: false }} />
           </Stack.Group>
         </Stack.Navigator>
       </NavigationContainer>

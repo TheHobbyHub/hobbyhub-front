@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -75,7 +75,11 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.subtitulo}>Descubra oficinas criativas e novos hobbies perto de você.</Text>
 
         {resumo.possuiAssinatura ? (
-          <CardAssinaturaAtiva resumo={resumo} />
+          <CardAssinaturaAtiva
+            resumo={resumo}
+            // Gerenciar Assinatura fica na aba Perfil; initial: false mantém o Perfil embaixo para o "voltar" funcionar
+            onGerenciar={() => navigation.navigate('Perfil', { screen: 'GerenciarAssinatura', initial: false })}
+          />
         ) : (
           <CardSemAssinatura planos={planos} onConhecerPlanos={() => navigation.navigate('Planos')} />
         )}
@@ -152,7 +156,7 @@ function CardSemAssinatura({ planos, onConhecerPlanos }) {
   );
 }
 
-function CardAssinaturaAtiva({ resumo }) {
+function CardAssinaturaAtiva({ resumo, onGerenciar }) {
   const total = resumo.creditosMensais || 0;
   const saldo = resumo.saldoCreditos || 0;
   const concluidas = resumo.aulasConcluidasNoCiclo || 0;
@@ -200,7 +204,7 @@ function CardAssinaturaAtiva({ resumo }) {
 
       <TouchableOpacity
         style={[styles.botaoPrimario, { backgroundColor: cores.secundaria }]}
-        onPress={() => Alert.alert('Em breve', 'O gerenciamento da assinatura estará disponível em breve.')}
+        onPress={onGerenciar}
         activeOpacity={0.85}
       >
         <Ionicons name="options-outline" size={18} color="#FFF" />
