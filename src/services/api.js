@@ -72,6 +72,54 @@ export const buscarResumoAssinatura = async (usuarioId) => {
   return response.data;
 };
 
+// cartao: { numero, nomeTitular, validade } (o CVV não é enviado)
+export const assinarPlano = async (usuarioId, planoId, cartao) => {
+  const response = await api.post('/assinaturas/assinar', { usuarioId, planoId, metodoPagamento: 'cartao_credito', cartao });
+  return response.data;
+};
+
+// Gerenciar Assinatura: plano, ciclo, troca/cancelamento agendados e cartão
+export const buscarDetalhesAssinatura = async (usuarioId) => {
+  const response = await api.get(`/assinaturas/usuario/${usuarioId}/detalhes`);
+  return response.data;
+};
+
+export const listarFaturas = async (usuarioId) => {
+  const response = await api.get(`/assinaturas/usuario/${usuarioId}/faturas`);
+  return response.data;
+};
+
+export const trocarCartao = async (usuarioId, cartao) => {
+  const response = await api.put(`/assinaturas/usuario/${usuarioId}/cartao`, cartao);
+  return response.data;
+};
+
+// Planos com o efeito da troca: tipo ATUAL | UPGRADE | DOWNGRADE | AGENDADO, valorCobradoHoje e dataInicio
+export const listarOpcoesTrocaPlano = async (usuarioId) => {
+  const response = await api.get(`/assinaturas/usuario/${usuarioId}/opcoes-troca`);
+  return response.data;
+};
+
+export const trocarPlano = async (usuarioId, planoId) => {
+  const response = await api.post(`/assinaturas/usuario/${usuarioId}/trocar-plano`, { planoId });
+  return response.data;
+};
+
+export const desistirTrocaPlano = async (usuarioId) => {
+  const response = await api.delete(`/assinaturas/usuario/${usuarioId}/troca-agendada`);
+  return response.data;
+};
+
+export const cancelarAssinatura = async (usuarioId) => {
+  const response = await api.post(`/assinaturas/usuario/${usuarioId}/cancelar`);
+  return response.data;
+};
+
+export const reativarAssinatura = async (usuarioId) => {
+  const response = await api.post(`/assinaturas/usuario/${usuarioId}/reativar`);
+  return response.data;
+};
+
 export const listarAulas = async (filtros = {}) => {
   const params = Object.fromEntries(
     Object.entries(filtros).filter(([, valor]) => valor !== undefined && valor !== null && valor !== '')

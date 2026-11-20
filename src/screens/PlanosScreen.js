@@ -136,7 +136,7 @@ export default function PlanosScreen({ navigation }) {
           </View>
           <View style={styles.garantiaRow}>
             <View style={styles.checkBg}><Ionicons name="checkmark" size={12} color="#4A5799" /></View>
-            <Text style={styles.garantiaText}>Cancele ou pause sua assinatura a qualquer momento</Text>
+            <Text style={styles.garantiaText}>Cancele sua assinatura a qualquer momento</Text>
           </View>
           <View style={styles.garantiaRow}>
             <View style={styles.checkBg}><Ionicons name="checkmark" size={12} color="#4A5799" /></View>
@@ -144,7 +144,7 @@ export default function PlanosScreen({ navigation }) {
           </View>
           <View style={styles.garantiaRow}>
             <View style={styles.checkBg}><Ionicons name="checkmark" size={12} color="#4A5799" /></View>
-            <Text style={styles.garantiaText}>Não usou tudo? Créditos acumulam por 30 dias adicionais</Text>
+            <Text style={styles.garantiaText}>Créditos renovados todo mês, válidos durante o ciclo mensal</Text>
           </View>
         </View>
 

@@ -68,7 +68,29 @@ export const formatarDuracaoLonga = (minutos) => {
   return m ? `${h}h ${m}min` : `${h}h`;
 };
 
-export const formatarPreco = (valor) => `R$ ${Number(valor).toFixed(2).replace('.', ',')}`;
+// "14 de Outubro, 2024"
+export const formatarDataExtenso = (dataIso) => {
+  const data = parseData(dataIso);
+  return `${data.getDate()} de ${MESES[data.getMonth()]}, ${data.getFullYear()}`;
+};
+
+// "14 de Nov de 2024"
+export const formatarDataMesAbreviado = (dataIso) => {
+  const data = parseData(dataIso);
+  return `${data.getDate()} de ${MESES[data.getMonth()].slice(0, 3)} de ${data.getFullYear()}`;
+};
+
+// Máscara "0000 0000 0000 0000" ao digitar (até 19 dígitos)
+export const mascararNumeroCartao = (valor) =>
+  (valor || '').replace(/\D/g, '').slice(0, 19).replace(/(\d{4})(?=\d)/g, '$1 ');
+
+// Máscara MM/AA ao digitar
+export const mascararValidadeCartao = (valor) => {
+  const d = (valor || '').replace(/\D/g, '').slice(0, 4);
+  return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
+};
+
+export const formatarPreco = (valor) =>`R$ ${Number(valor).toFixed(2).replace('.', ',')}`;
 
 export const removerPrefixoPlano = (nome) => (nome || '').replace(/^Plano\s+/i, '');
 

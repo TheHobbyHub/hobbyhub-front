@@ -24,7 +24,8 @@ export default function TabBar({ state, descriptors, navigation }) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+    // Folga extra acima da área do sistema (barra de gestos/botões), para a barra não ficar colada embaixo
+    <View style={[styles.wrapper, { paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.barra}>
         {state.routes.map((route, index) => {
           const ativo = state.index === index;
